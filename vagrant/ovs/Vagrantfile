@@ -1,0 +1,11 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "debian/stretch64"
+  config.vm.network :public_network,
+    :dev => "ovsbr0",
+    :ovs => true,
+    :use_dhcp_assigned_default_route => true
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+  config.vm.provider :libvirt do |dom|
+    dom.management_network_mode = "veryisolated"
+  end
+end
