@@ -1,0 +1,11 @@
+---
+- name: various tests
+  hosts: vm-ast1
+  gather_facts: False
+  tasks:
+    - name: uptime
+      command: uptime
+      register: out
+    - debug: 
+        msg: "{{ out.stdout }}"
+

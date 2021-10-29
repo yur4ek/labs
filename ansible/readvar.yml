@@ -1,0 +1,29 @@
+---
+- name: update vm-ast1
+  hosts: vm-ast1
+  gather_facts: false
+  serial: 1
+  vars:
+    client: "k1"
+    sum: 4000
+  tasks:
+    - name: Проверяем существует ли astersip2-{{ client }}        
+      shell: >
+        asterisk -rx "database show balance astersip2-{{ client }}" | grep -oP "(?<=: )[\d\.]+"
+      register: out
+    - name: Обновляем баланс {{ out.stdout }} -> {{ sum  + out.stdout| int }}
+      shell: asterisk -rx "database put balance astersip2-{{ client }} {{ sum  + out.stdout| int }}"
+- name: update vm-ast2
+  hosts: vm-ast2
+  gather_facts: false
+  serial: 1
+  vars:
+    client: "k1"
+    sum: 4000
+  tasks:
+    - name: Проверяем существует ли {{ client }}        
+      shell: >
+        asterisk -rx "database show balance {{ client }}" | grep -oP "(?<=: )[\d\.]+"
+      register: out
+    - name: Обновляем баланс {{ out.stdout }} -> {{ sum  + out.stdout| int }}
+      shell: asterisk -rx "database put balance {{ client }} {{ sum  + out.stdout| int }}"
