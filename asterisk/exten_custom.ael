@@ -1,0 +1,72 @@
+context alocal {
+    _4XX => {
+        NoOp(alocal: ext ${EXTEN} not assigned);
+        Hangup();
+    }
+    410 => {
+        NoOp(alocal: ext ${EXTEN} simple exten match test);
+        Hangup();
+    }
+
+    411 => {
+        ifTime(14:00-15:00|mon-fri|*|*) {
+            NoOp(Lunch time);
+            Busy();
+        }
+        else {
+            Dial(SIP/vm1-100,120);
+            Hangup();
+        }
+        NoOp(finish if case);
+    }
+    412 => {
+        if("${CALLERID(num)}" = "102") {
+            Dial(SIP/vm1-100,5);
+        }
+    // jump to _4XX
+    }
+    413 => {
+        NoOp(alocal: variables checks);
+        ani = ${CALLERID(num)};
+        //name = CHANNEL(name);
+        NoOp(${ani} ${name});
+        Hangup();
+    }
+    414 => {
+        DUMP=1;
+        &dial-if-avail(100);
+        Hangup();
+    }
+    415 => {
+        // gosub not work with ael :(
+        // Gosub(test-sub);
+        NoOp(ret value: ${GOSUB_RETVAL});
+        Hangup();
+    }
+    h => {
+        NoOp(=============================);
+        if("${DUMP}"="1") {
+            Dumpchan();
+        }
+    }
+}
+
+macro dial-if-avail(ext) {
+    switch (${DEVICE_STATE(SIP/vm1-${ext})}) {
+        case NOT_INUSE:
+            NoOp(exten: ${EXTEN});
+            Dial(SIP/vm1-${ext},4);
+            break;
+        default:
+            Playback(tt-monkeys);
+    }
+    return;
+    //return(${DIALSTATUS});
+    //return ${DIALSTATUS};
+}
+
+context test-sub {
+    s => {
+        NoOp(enter test-sub);
+    }
+}
