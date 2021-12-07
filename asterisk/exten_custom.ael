@@ -38,9 +38,22 @@ context alocal {
         Hangup();
     }
     415 => {
-        // gosub not work with ael :(
-        // Gosub(test-sub);
+        Gosub(test-sub,s,1);
         NoOp(ret value: ${GOSUB_RETVAL});
+        Hangup();
+    }
+    416 => {
+        switch (${EXTEN}) {
+            case 400:
+                NoOp();
+                break;
+            case 416:
+                NoOp(check 416. exten: ${EXTEN});
+                break;
+            default:
+                NoOp(---);
+                break;
+        }
         Hangup();
     }
     h => {
