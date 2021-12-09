@@ -56,6 +56,10 @@ context alocal {
         }
         Hangup();
     }
+    417 => {
+        NoOp(simple dial);
+        Dial(PJSIP/vm1-100,120);
+    }
     h => {
         NoOp(=============================);
         if("${DUMP}"="1") {
